@@ -6,6 +6,7 @@ from description import description
 from glossary import glossary
 from model import run_cadcad_model
 from utils import load_constants
+from toc import H1, H2, H3, TOC
 
 C = CONSTANTS = load_constants()
 
@@ -17,7 +18,10 @@ st.set_page_config(
     layout="wide",
 )
 
-st.markdown("# Filecoin Consensus Pledge Educational Calculator")
+toc = TOC()
+
+
+toc.title("Filecoin Consensus Pledge Educational Calculator")
 
 st.markdown(
     """
@@ -30,16 +34,16 @@ You have full control over the raw-bytes Network Power trajectory! That's the `u
 with st.expander("See description"):
     description()
 
-st.markdown("# Graphs")
+toc.header("Graphs")
 plot_container = st.container()
 
-st.markdown("# Glossary")
+toc.header("Glossary")
 glossary_container = st.container()
 with glossary_container:
     with st.expander("See glossary"):
         glossary()
 
-st.markdown("# Download")
+toc.header("Download")
 download_container = st.container()
 
 # Define sidebar
@@ -136,24 +140,24 @@ user_df = df.query("scenario == 'consensus_pledge_on'")
 with plot_container:
     num_steps = df.timestep.nunique()
     vline = duration_1 / 365.25
-    st.markdown("## Network Power")
+    toc.subheader("Network Power")
     network_power_chart = NetworkPowerPlotlyChart.build(user_df, num_steps, vline)
     qa_power_chart = QAPowerPlotlyChart.build(user_df, num_steps)
 
-    st.markdown("## Token Distribution & Supply")
+    toc.subheader("Token Distribution & Supply")
     circulating_supply_chart = CirculatingSupplyPlotlyChart.build(df, num_steps, vline)
     token_dist_chart = TokenDistributionPlotlyChart.build(df, num_steps, vline)
     locked_token_dist_chart = TokenLockedDistributionPlotlyChart.build(df, num_steps, vline)
 
-    st.markdown("## Security")
+    toc.subheader("Security")
     critical_cost_chart = CriticalCostPlotlyChart.build(df, num_steps, vline)
     circulating_surplus_chart = CirculatingSurplusPlotlyChart.build(df, num_steps, vline)
 
-    st.markdown("## Sector Onboarding")
+    toc.subheader("Sector Onboarding")
     onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(df, num_steps, vline)
     rb_onboarding_collateral_chart = RBOnboardingCollateralPlotlyChart.build(df, num_steps, vline)
     
-    st.markdown("## Sector Reward")
+    toc.subheader("Sector Reward")
     reward_chart = RewardPlotlyChart.build(user_df, num_steps, vline)
     reward_per_power_chart = RewardPerPowerPlotlyChart.build(user_df, num_steps, vline)
     
@@ -174,3 +178,5 @@ with download_container:
         file_name="filecoin_basefunc_sim_results.csv",
         mime="text/csv",
     )
+
+toc.generate()

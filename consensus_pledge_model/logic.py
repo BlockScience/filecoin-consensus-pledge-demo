@@ -3,7 +3,6 @@ from consensus_pledge_model.params import YEAR
 from collections import defaultdict
 from copy import copy, deepcopy
 from consensus_pledge_model.types import *
-import scipy.stats as st
 
 # ## Time Tracking
 

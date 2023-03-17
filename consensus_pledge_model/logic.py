@@ -359,6 +359,7 @@ def s_sectors_onboard(params: ConsensusPledgeParams,
         # Find what the pledges should be
         storage_pledge = state['storage_pledge_per_new_qa_power'] * power_qa_new
         consensus_pledge = state['consensus_pledge_per_new_qa_power'] * power_qa_new
+        
         # Create new aggregate sector
         reward_schedule = {}
         new_sectors = AggregateSector(power_rb=power_rb_new,
@@ -397,13 +398,13 @@ def s_sectors_renew(params,
     # Assumption: Sectors are going to perform a `delta_days` amount of
     # independent trials when renewing. It is possible that a sector
     # renews more than 1x on a given timestep.
-    #renew_share = state['behaviour'].daily_renewal_probability * state['delta_days']
+    renew_share = state['behaviour'].daily_renewal_probability * state['delta_days']
 
     # Assumption: Sectors are going to attempt to renew daily until they're successful.
     # No more attempts through the timestep will be done after that.
-    renew_share = st.binom.pmf(k=1, n=state['delta_days'], p=state['behaviour'].daily_renewal_probability)
+    # renew_share = st.binom.pmf(k=1, n=state['delta_days'], p=state['behaviour'].daily_renewal_probability)
+    
     current_sectors_list = state['aggregate_sectors'].copy()
-
     storage_pledge_old = 0.0
     consensus_pledge_old = 0.0
 

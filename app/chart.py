@@ -41,7 +41,7 @@ class NetworkPowerPlotlyChart(PlotlyChart):
             },
             # range_x=cls.compose_x_domain(num_steps),
             #range_y=(0, 50_000),
-            # log_y=True,
+            log_y=True,
         )
         for k, v in vline.items():
             chart.add_vline(v, line_dash="dot",   annotation_text=k)
@@ -62,7 +62,7 @@ class QAPowerPlotlyChart(PlotlyChart):
             },
             # range_x=cls.compose_x_domain(num_steps),
             #range_y=(0, 150_000),
-            # log_y=True,
+            log_y=True,
         )
         for k, v in vline.items():
             chart.add_vline(v, line_dash="dot",   annotation_text=k)

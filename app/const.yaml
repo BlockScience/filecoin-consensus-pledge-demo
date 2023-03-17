@@ -5,7 +5,7 @@ speed_to_latency:                  # seconds per simulation replay step
   slow: .5
   medium: .1
   fast: .02
-phase_count: 2
+phase_count: 5
 phase_config:
   1:
     duration: 1.0

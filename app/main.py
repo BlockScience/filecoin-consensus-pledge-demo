@@ -128,7 +128,7 @@ new_sector_lifetime = st.sidebar.slider(
 )
 
 daily_renewal_probability = st.sidebar.slider(
-    "Daily Renewal Probability (%)", 0.0, 20.0, phases[option].daily_renewal_probability * 100, 0.5, key=f"{option}_renewal")
+    "Daily Renewal Probability (%)", 0.0, 10.0, phases[option].daily_renewal_probability * 100, 0.5, key=f"{option}_renewal")
 
 
 renewal_lifetime = phases[option].new_sector_lifetime

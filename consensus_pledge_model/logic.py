@@ -1,7 +1,7 @@
 from cadCAD_tools.types import Signal, VariableUpdate
 from consensus_pledge_model.params import YEAR
 from collections import defaultdict
-from copy import copy, deepcopy
+from copy import copy
 from consensus_pledge_model.types import *
 
 # ## Time Tracking
@@ -11,6 +11,17 @@ def p_evolve_time(params: ConsensusPledgeParams,
                   _2,
                   _3,
                   _4) -> Signal:
+    """Update the timesteps in the day
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2 
+        _3 
+        _4 
+
+    Returns:
+        Signal: The number of days that are added in the epoch
+    """
     return {'delta_in_days': params['timestep_in_days']}
 
 
@@ -19,6 +30,19 @@ def s_days_passed(_1,
                   _3,
                   state: ConsensusPledgeDemoState,
                   signal: Signal) -> VariableUpdate:
+    """State update for the number of days passed
+
+    Args:
+        _1
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: The updates to the days passed variable
+    """
+    # Simply add the delta days to current days passed
     value = state['days_passed'] + signal['delta_in_days']
     return ('days_passed', value)
 
@@ -28,19 +52,51 @@ def s_delta_days(_1,
                  _3,
                  state: ConsensusPledgeDemoState,
                  signal: Signal) -> VariableUpdate:
+    """Simple state update to keep track of delta days assumption
+
+    Args:
+        _1
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: The updates to the delta_in_days variable
+    """
+
     value = signal['delta_in_days']
     return ('delta_days', value)
 
 
 def s_behaviour(params: ConsensusPledgeParams,
-                 _2,
-                 _3,
-                 state: ConsensusPledgeDemoState,
-                 signal: Signal) -> VariableUpdate:
+                _2,
+                _3,
+                state: ConsensusPledgeDemoState,
+                signal: Signal) -> VariableUpdate:
+    """State update for what the current behavior is
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: The update to the behaviour variable
+    """
+
+    # Pull out behavioural_params from params
     behaviour_params = params['behavioural_params']
+
+    # Filter behaviors to only be ones where the key is greater than days passed
     filtered_params = {k: v for k, v in behaviour_params.items() if k >= state['days_passed']}
+
+    # Grab the first element (latest relevant behavior where key > days_passed)
     lowest_key = min(filtered_params.keys())
     value = filtered_params[lowest_key]
+
     return ('behaviour', value)
 
 # ## Network
@@ -51,6 +107,18 @@ def s_power_qa(params: ConsensusPledgeParams,
                _3,
                state: ConsensusPledgeDemoState,
                signal: Signal) -> VariableUpdate:
+    """State update for the current quality adjusted power
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: The update to the power_qa variable
+    """
     value = sum(s.power_qa for s in state['aggregate_sectors'])
     return ('power_qa', value)
 
@@ -60,6 +128,18 @@ def s_power_rb(params: ConsensusPledgeParams,
                _3,
                state: ConsensusPledgeDemoState,
                signal: Signal) -> VariableUpdate:
+    """State update for the current power
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: The update to the power_rb variable
+    """
     value = sum(s.power_rb for s in state['aggregate_sectors'])
     return ('power_rb', value)
 
@@ -69,9 +149,24 @@ def s_baseline(params: ConsensusPledgeParams,
                _3,
                state: ConsensusPledgeDemoState,
                signal: Signal) -> VariableUpdate:
+    """Function to update the current baseline
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: Update for the current baseline
+    """
+    # Get the number of baseline years
     days_passed = state['days_passed']
     DAYS_TO_YEARS = 1 / 365.25
     baseline_years = days_passed * DAYS_TO_YEARS
+
+    # Find the baseline value at the current number of baseline years
     value = params['baseline_mechanism'].baseline_function(
         baseline_years)
     return ('baseline', value)
@@ -82,16 +177,29 @@ def s_cumm_capped_power(params: ConsensusPledgeParams,
                         _3,
                         state: ConsensusPledgeDemoState,
                         signal: Signal) -> VariableUpdate:
-    # TODO: refactor for making it cleaner
+    """Function for finding the cummulative capped power
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: The cumm_capped_power variable update
+    """
     DAYS_TO_YEARS = 1 / YEAR
     dt = params['timestep_in_days'] * DAYS_TO_YEARS
     current_power = state['power_rb']
 
+    # If the baseline_activated then capped_power is bounded to be the baseline
     if params['baseline_activated'] is True:
         capped_power = min(current_power, state['baseline'])
     else:
         capped_power = state['baseline']
 
+    # Add the capped_power over the time delta to the cummulative
     cumm_capped_power_differential = capped_power * dt
     new_cumm_capped_power = state['cumm_capped_power'] + \
         cumm_capped_power_differential
@@ -103,8 +211,22 @@ def s_effective_network_time(params: ConsensusPledgeParams,
                              history: list[list[ConsensusPledgeDemoState]],
                              state: ConsensusPledgeDemoState,
                              signal: Signal) -> VariableUpdate:
+    """The update function for effective network time
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        history (list[list[ConsensusPledgeDemoState]]): History of the states of the system
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: Variable update for effective_network_time
+    """
+    # Calculate through the baseline mechanism parameter
     value = params['baseline_mechanism'].effective_network_time(
         state['cumm_capped_power'])
+
     return ('effective_network_time', value)
 
 
@@ -113,6 +235,18 @@ def s_reward(params: ConsensusPledgeParams,
              history: list[list[ConsensusPledgeDemoState]],
              state: ConsensusPledgeDemoState,
              signal: Signal) -> VariableUpdate:
+    """Function which updates the reward
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        history (list[list[ConsensusPledgeDemoState]]): History of the states of the system
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: Variable update for the reward
+    """
     # Simple Minting
     simple_mechanism = params['simple_mechanism']
     t_i = history[-1][-1]['days_passed'] / YEAR
@@ -136,69 +270,102 @@ def s_reward(params: ConsensusPledgeParams,
     return ('reward', reward)
 
 
-def s_consensus_pledge_per_new_qa_power(params,
+def s_consensus_pledge_per_new_qa_power(params: ConsensusPledgeParams,
                                         _2,
                                         _3,
-                                        state,
-                                        _5):
+                                        state: ConsensusPledgeDemoState,
+                                        _5) -> VariableUpdate:
+    """Function which updates consensus_pledge_per_new_qa_power
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        _5
+
+    Returns:
+        VariableUpdate: Variable update for the consensus_pledge_per_new_qa_power
     """
-    CP per Sector = TLS * CircSupply * SectorQAP / max(baseline, QA_Net_Power)
-    Sum[SectorQAP] = OnboardingNetworkQAP
-    CP this round = OnboardingNetworkQAP * 
-    What should be returned: TLS * CircSupply / max(baseline, CurrentNetworkQAP)
-    """
+
+    # Find total locked supply
     value = params['target_locked_supply']
     value *= state['token_distribution'].circulating
+
+    # Find locked supply per quality adjusted power
     value /= max(state['baseline'], state['power_qa'])
     return ('consensus_pledge_per_new_qa_power', value)
 
 
-def s_storage_pledge_per_new_qa_power(params,
+def s_storage_pledge_per_new_qa_power(params: ConsensusPledgeParams,
                                       _2,
                                       history: dict[list, dict[list, ConsensusPledgeDemoState]],
-                                      state: ConsensusPledgeDemoState, _5):
-    """
-    SP per Sector = Estimated 20 days of daily BR for the Sector
+                                      state: ConsensusPledgeDemoState, _5) -> VariableUpdate:
+    """SP per Sector = Estimated 20 days of daily BR for the Sector
     SP this round = OnboardingNetworkQAP * 20 * DailyBR / ExistingNetworkQAP
     What should be returned: 20 * DailyBR / CurrentNetworkQAP
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        history (dict[list, dict[list, ConsensusPledgeDemoState]]): History of the states of the system
+        state (ConsensusPledgeDemoState): The current state of the system
+        _5
+
+    Returns:
+        VariableUpdate: Variable update for the storage_pledge_per_new_qa_power
     """
 
+    # Find estimate of daily rewards
     current_reward = state["reward"].block_reward
     dt = state['delta_days']
     daily_reward_estimate = current_reward / dt
 
+    # Find 20D daily reward divided by power_qa
     value = daily_reward_estimate
     value *= 20.0
     value /= state["power_qa"]
 
-    #total_reward = state["reward"].block_reward
-    #total_qa = state["power_qa"]
-    #multiplier_days = 20
-    #value = multiplier_days * total_reward / total_qa
     return ('storage_pledge_per_new_qa_power', value)
 
 
-def s_sectors_onboard(params,
+def s_sectors_onboard(params: ConsensusPledgeParams,
                       _2,
                       _3,
                       state: ConsensusPledgeDemoState,
                       signal: Signal) -> VariableUpdate:
-    
+    """Onboard sectors
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: VariableUpdate for aggregate_sectors
+    """
+
     current_sectors_list = state['aggregate_sectors'].copy()
+
     # Sector Properties
-    power_rb_new = state['behaviour'].new_sector_rb_onboarding_rate * state['delta_days']
+    power_rb_new = state['behaviour'].new_sector_rb_onboarding_rate * \
+        state['delta_days']
     power_qa_new = power_rb_new * state['behaviour'].new_sector_quality_factor
 
     if power_rb_new > 0.0:
+        # Find what the pledges should be
         storage_pledge = state['storage_pledge_per_new_qa_power'] * power_qa_new
         consensus_pledge = state['consensus_pledge_per_new_qa_power'] * power_qa_new
+        # Create new aggregate sector
         reward_schedule = {}
         new_sectors = AggregateSector(power_rb=power_rb_new,
-                                    power_qa=power_qa_new,
-                                    remaining_days=state['behaviour'].new_sector_lifetime,
-                                    storage_pledge=storage_pledge,
-                                    consensus_pledge=consensus_pledge,
-                                    reward_schedule=reward_schedule)
+                                      power_qa=power_qa_new,
+                                      remaining_days=state['behaviour'].new_sector_lifetime,
+                                      storage_pledge=storage_pledge,
+                                      consensus_pledge=consensus_pledge,
+                                      reward_schedule=reward_schedule)
         current_sectors_list.append(new_sectors)
     else:
         pass
@@ -211,9 +378,23 @@ def s_sectors_renew(params,
                     _3,
                     state: ConsensusPledgeDemoState,
                     signal: Signal) -> VariableUpdate:
+    """Function to take care of sector renewals
 
-    renew_share = (1 + state['behaviour'].renewal_probability) ** state['delta_days'] - 1
-    current_sectors_list = state['aggregate_sectors'].copy() 
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: VariableUpdate for aggregate_sectors
+    """
+
+    # Find share of renewals
+    renew_share = (
+        1 + state['behaviour'].renewal_probability) ** state['delta_days'] - 1
+    current_sectors_list = state['aggregate_sectors'].copy()
 
     if renew_share > 0:
         power_rb_renew: PiB = 0.0
@@ -227,8 +408,8 @@ def s_sectors_renew(params,
             sector_storage_pledge_renew = aggregate_sector.storage_pledge * renew_share
             sector_consensus_pledge_renew = aggregate_sector.consensus_pledge * renew_share
             sector_schedule_renew = {k: v * renew_share
-                                    for k, v
-                                    in aggregate_sector.reward_schedule.items()}
+                                     for k, v
+                                     in aggregate_sector.reward_schedule.items()}
 
             # Assign values to the new renewed sectors
             power_rb_renew += sector_power_rb_renew
@@ -260,11 +441,11 @@ def s_sectors_renew(params,
 
         # Create new sector representing the Renewed Sectors
         new_sectors = AggregateSector(power_rb=power_rb_renew,
-                                    power_qa=power_qa_renew,
-                                    remaining_days=state['behaviour'].renewal_lifetime,
-                                    storage_pledge=storage_pledge_renew,
-                                    consensus_pledge=consensus_pledge_renew,
-                                    reward_schedule=reward_schedule_renew)
+                                      power_qa=power_qa_renew,
+                                      remaining_days=state['behaviour'].renewal_lifetime,
+                                      storage_pledge=storage_pledge_renew,
+                                      consensus_pledge=consensus_pledge_renew,
+                                      reward_schedule=reward_schedule_renew)
         current_sectors_list.append(new_sectors)
     else:
         pass
@@ -277,11 +458,17 @@ def s_sectors_expire(_1,
                      _3,
                      state: ConsensusPledgeDemoState,
                      signal: Signal) -> VariableUpdate:
-    """
-    Evolve the sector lifetime & expire if they're below zero.
-    Freed tokens are handled implictly when re-computing the `token_distribution
-    # TODO: what happens with the locked rewards when an sector is expired?
-    # FIXME: assume that locked rewards are going to be released.
+    """Function which updates for sectors expiring. The assumption is that that locked rewards are going to be released.
+
+    Args:
+        _1
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: VariableUpdate for aggregate_sectors
     """
 
     current_sectors_list = state['aggregate_sectors'].copy()
@@ -308,9 +495,8 @@ def s_sectors_rewards(params: ConsensusPledgeParams,
                       _3,
                       state: ConsensusPledgeDemoState,
                       signal: Signal) -> VariableUpdate:
+    """Function for computing the sector rewards
 
-    # Homework for @jackhack00: Implement this SUF
-    """
     Parts for what this SUF represents for each AggregateSector Schedule:
     Part 1 - Unlock Current Rewards. eg. {0: 5, 1: 10, 2: 20} -> {1: 10, 2: 20}
     NOTE: Unlocking only adds them back to circulating. Can remove item at index 0, since
@@ -333,8 +519,18 @@ def s_sectors_rewards(params: ConsensusPledgeParams,
     then
     reward_schedule_final = {0: 20 + 5, 1: 30 + 5, 2: 40 + 5, 3: 50}
 
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: VariableUpdate for aggregate_sectors
     """
-    # retrieve total rewards
+
+    # Retrieve total rewards
     total_reward = state["reward"].block_reward
     linear_duration = params["linear_duration"]
     current_sector_list = state["aggregate_sectors"].copy()
@@ -376,6 +572,17 @@ def p_vest_fil(params: ConsensusPledgeParams,
                _2,
                _3,
                state: ConsensusPledgeDemoState) -> VariableUpdate:
+    """Function for computation of fil to vest
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+
+    Returns:
+        VariableUpdate: VariableUpdate for fil_to_vest
+    """
     now = state['days_passed']
     value = params['vesting_schedule'].get(now, 0.0)
     return {'fil_to_vest': value}
@@ -385,29 +592,67 @@ def p_burn_fil(_1,
                _2,
                _3,
                state: ConsensusPledgeDemoState) -> VariableUpdate:
+    """Function for finding fil to burn
+
+    Args:
+        _1
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+
+    Returns:
+        VariableUpdate: VariableUpdate for fil_to_burn
+    """
     return {'fil_to_burn': 0.0}
 
-def p_minted_fil(params: ConsensusPledgeParams,
-               _2,
-               _3,
-               state: ConsensusPledgeDemoState) -> VariableUpdate:
 
-    value = params['simple_mechanism'].issuance(state['effective_network_time'])
-    value += params['baseline_mechanism'].issuance(state['effective_network_time'])
+def p_minted_fil(params: ConsensusPledgeParams,
+                 _2,
+                 _3,
+                 state: ConsensusPledgeDemoState) -> VariableUpdate:
+    """Function for finding fil to mint
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+
+    Returns:
+        VariableUpdate: VariableUpdate for fil_minted
+    """
+
+    value = params['simple_mechanism'].issuance(
+        state['effective_network_time'])
+    value += params['baseline_mechanism'].issuance(
+        state['effective_network_time'])
     return {'fil_minted': value}
+
 
 def s_token_distribution(params: ConsensusPledgeParams,
                          _2,
                          _3,
                          state: ConsensusPledgeDemoState,
                          signal: Signal) -> VariableUpdate:
+    """Find the new token distribution
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: Update the token_distribution variable
+    """
     distribution = copy(state["token_distribution"])
     rewards = state["reward"].block_reward
     aggregate_sectors = state["aggregate_sectors"]
     burn = signal.get('fil_to_burn', 0.0)
     today_vested = signal.get("fil_to_vest", 0.0)
 
-    distribution = distribution.update_distribution(
+    distribution.update_distribution(
         new_vested=today_vested,
         minted=signal.get('fil_minted', None),
         aggregate_sectors=aggregate_sectors,

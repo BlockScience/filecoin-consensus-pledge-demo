@@ -6,7 +6,8 @@ from description import description
 from glossary import glossary
 from model import run_cadcad_model
 from utils import load_constants
-
+from consensus_pledge_model.types import BehaviouralParams
+from copy import deepcopy
 C = CONSTANTS = load_constants()
 
 # Define layout
@@ -65,72 +66,79 @@ st.sidebar.markdown("## Sector Onboarding Configuration")
 
 defaults = C
 
-years = st.sidebar.slider(
-    "Simulation Duration in Years", 0.0, 10.0, defaults["years"], 0.25, key="years"
+
+phase_defaults = defaults['phase_config']
+phase_count = st.sidebar.slider(
+    "Number of Phases", 1, len(phase_defaults), defaults["phase_count"], 1, key="phase_count"
 )
-days = years * 366
+
+DEFAULT_PHASES = {}
+DEFAULT_PHASE_DURATIONS = {}
+for i in range(1, len(phase_defaults) + 1):
+    phase_default = phase_defaults[i]
+    DEFAULT_PHASE_DURATIONS[i] = phase_default['duration']
+    params = BehaviouralParams(i, 
+                               phase_default['rb_onboarding_rate'], 
+                               phase_default['quality_factor'], 
+                               phase_default['sector_lifetime'], 
+                               phase_default['renewal_probability'], 
+                               phase_default['sector_lifetime'])
+    DEFAULT_PHASES[i] = params
+
+if 'phases' not in vars():
+    phases = deepcopy(DEFAULT_PHASES)
+if 'phase_durations' not in vars():
+    phase_durations = deepcopy(DEFAULT_PHASE_DURATIONS)
 
 st.sidebar.markdown(
-"""### Phase 1"""
+"""### Phase Configuration""")
+
+option = int(st.sidebar.selectbox(
+    'Selected Phase',
+    list(phases.keys()),
+    label_visibility='visible',
+    key='phase_select'))
+
+
+phases = deepcopy(phases)
+phase_durations = deepcopy(phase_durations)
+
+phase_durations[option] = st.sidebar.slider(
+    "Duration in Years", 0.0, 4.0, phase_defaults[option]['duration'], 0.25, key=f"{option}_duration"
 )
 
-duration_1_years = st.sidebar.slider(
-    "Duration in Days", 0.0, years, defaults["duration_1"], 0.1, key="duration_1"
-)
-duration_1 = duration_1_years * 365.5
-
-new_sector_rb_onboarding_rate_1 = st.sidebar.slider(
-    "RB Onboarding Rate (PiB)", 0.0, 500.0, defaults["new_sector_rb_onboarding_rate_1"], 0.1, key="new_sector_rb_onboarding_rate_1"
+new_sector_onboarding_rate = st.sidebar.slider(
+    "RB Onboarding Rate (PiB)", 0.0, 500.0, phase_defaults[option]['rb_onboarding_rate'], 0.1, key=f"{option}_onboarding_rate"
 )
 
-new_sector_quality_factor_1 = st.sidebar.slider(
-    "RB Onboarding QF", 1.0, 20.0, defaults["new_sector_quality_factor_1"], 0.1, key="new_sector_quality_factor_1"
+new_sector_quality_factor = st.sidebar.slider(
+    "RB Onboarding QF", 1.0, 20.0, phase_defaults[option]['quality_factor'], 0.1, key=f"{option}_quality_factor"
 )
 
-new_sector_lifetime_1 = st.sidebar.slider(
-    "New Sector Lifetime", 180, 360, defaults["new_sector_lifetime_1"], 1, key="new_sector_lifetime_1"
+new_sector_lifetime = st.sidebar.slider(
+    "New Sector Lifetime", 180, 360, phase_defaults[option]['sector_lifetime'], 1, key=f"{option}_lifetime"
+)
+renewal_lifetime = phases[option].new_sector_lifetime
+
+renewal_probability = st.sidebar.slider(
+    "Daily Renewal Probability (%)", 0.0, 10.0, phase_defaults[option]['renewal_probability'], 0.1, key=f"{option}_renewal"
 )
 
-renewal_probability_1 = st.sidebar.slider(
-    "Daily Renewal Probability (%)", 0.0, 10.0, defaults["renewal_probability_1"], 0.1, key="renewal_probability_1"
-)
+label = phases[option].label
+phases[option] = BehaviouralParams(label, 
+                                   new_sector_onboarding_rate,
+                                   new_sector_quality_factor,
+                                   new_sector_lifetime,
+                                   renewal_probability,
+                                   renewal_lifetime)
 
-st.sidebar.markdown(
-"""### Phase 2"""
-)
-
-new_sector_rb_onboarding_rate_2 = st.sidebar.slider(
-    "RB Onboarding Rate (PiB)", 0.0, 500.0, defaults["new_sector_rb_onboarding_rate_2"], 0.1, key="new_sector_rb_onboarding_rate_2"
-)
-
-new_sector_quality_factor_2 = st.sidebar.slider(
-    "RB Onboarding QF", 1.0, 20.0, defaults["new_sector_quality_factor_2"], 0.1, key="new_sector_quality_factor_2"
-)
-
-new_sector_lifetime_2 = st.sidebar.slider(
-    "New Sector Lifetime", 180, 360, defaults["new_sector_lifetime_2"], 1, key="new_sector_lifetime_2"
-)
-
-renewal_probability_2 = st.sidebar.slider(
-    "Daily Renewal Probability (%)", 0.0, 10.0, defaults["renewal_probability_2"], 0.1, key="renewal_probability_2"
-)
-
-# st.sidebar.markdown("## Compare Against")
-
-# SCENARIO2CHECKBOX = OrderedDict(
-#     {
-#         "user-baseline-deactivated": st.sidebar.checkbox("User + BaseFunc Deactivated Scenario", value=True),
-#         "optimistic": st.sidebar.checkbox("Optimistic Scenario", value=True),
-#         "baseline": st.sidebar.checkbox("BaseFunc Scenario", value=True),
-#     }
-# )
+sim_phase_durations = {k: v for k, v in phase_durations.items() if k <= phase_count}
+sim_phases = {k: v for k, v in phases.items() if k <= phase_count}
 
 # Run model
 ############
 
-df = run_cadcad_model(duration_1, new_sector_rb_onboarding_rate_1, new_sector_quality_factor_1, new_sector_lifetime_1, renewal_probability_1 / 100,
-                      new_sector_rb_onboarding_rate_2, new_sector_quality_factor_2, new_sector_lifetime_2,
-                       renewal_probability_2 / 100, days)
+df = run_cadcad_model(phase_durations, sim_phases)
 
 # Plot results
 ##########
@@ -138,7 +146,7 @@ df = run_cadcad_model(duration_1, new_sector_rb_onboarding_rate_1, new_sector_qu
 user_df = df.query("scenario == 'consensus_pledge_on'")
 with plot_container:
     num_steps = df.timestep.nunique()
-    vline = duration_1 / 365.25
+    vline = 0 / 365.25 # TODO
     st.markdown("### Network Power")
     network_power_chart = NetworkPowerPlotlyChart.build(user_df, num_steps, vline)
     qa_power_chart = QAPowerPlotlyChart.build(user_df, num_steps)

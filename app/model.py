@@ -17,37 +17,28 @@ C = CONSTANTS = load_constants()
 import streamlit as st
 
 @st.cache_resource
-def run_cadcad_model(duration_1,
-                     new_sector_rb_onboarding_rate_1,
-                     new_sector_quality_factor_1,
-                     new_sector_lifetime_1,
-                     renewal_probability_1,
-                     new_sector_rb_onboarding_rate_2,
-                     new_sector_quality_factor_2,
-                     new_sector_lifetime_2,
-                     renewal_probability_2,
-                     days):
+def run_cadcad_model(phase_durations: dict[int, float],
+                     phases: dict[int, BehaviouralParams]):
+    
+    total_duration = sum(phase_durations.values())
+    timesteps = int(total_duration * 365.25 / TIMESTEP_IN_DAYS)
+
     
     def run_sim(tls):
-        first_year = BehaviouralParams('first_year',
-                                                new_sector_rb_onboarding_rate_1,
-                                                new_sector_quality_factor_1,
-                                                new_sector_lifetime_1,
-                                                renewal_probability_1,
-                                                new_sector_lifetime_1)
-        second_year = BehaviouralParams('second_year',
-                                                new_sector_rb_onboarding_rate_2,
-                                                new_sector_quality_factor_2,
-                                                new_sector_lifetime_2,
-                                                renewal_probability_2,
-                                                new_sector_lifetime_2)
+
+        behaviour_param_dict = {}
+        for i_phase, phase in phases.items():
+            if i_phase == len(phases):
+                duration = inf
+            else:
+                duration = int(phase_durations[i_phase] * 365.25 / TIMESTEP_IN_DAYS)
+            behaviour_param_dict[duration] = phase
+
         params = ConsensusPledgeSweepParams(**{k: [v] for k, v in SINGLE_RUN_PARAMS.items()})
         params['target_locked_supply'] = [tls]
-        params["behavioural_params"] = [{duration_1: first_year,
-                                        inf: second_year}]
+        params["behavioural_params"] = [behaviour_param_dict]
 
 
-        timesteps = int(days / TIMESTEP_IN_DAYS)
         RUN_ARGS = (deepcopy(INITIAL_STATE), sweep_cartesian_product(params), CONSENSUS_PLEDGE_DEMO_BLOCKS, timesteps, 1)
         
         return easy_run(*RUN_ARGS)

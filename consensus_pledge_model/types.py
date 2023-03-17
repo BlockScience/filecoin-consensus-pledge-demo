@@ -130,7 +130,7 @@ class TokenDistribution():
         return self.available - self.locked
 
 
-@dataclass
+@dataclass(frozen=True)
 class BehaviouralParams():
     label: str
     new_sector_rb_onboarding_rate: PiB_per_Day

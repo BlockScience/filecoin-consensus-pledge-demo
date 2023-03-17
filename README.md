@@ -61,9 +61,38 @@ and use them as arguments to the `cadCAD_tools.execution.easy_run` method. Refer
     └── test_scenario.py
 ```
 
-- `app/`: The `streamlit` app
-- `consensus_pledge_model/`: the `cadCAD` model as encapsulated by a Python Module
-- `data/`: Simulation / Post-processed datasets
-- `notebooks/`: 
-- `scripts/`: 
-- `tests/`: 
+## What is cadCAD
+## Installing cadCAD for running this repo
+
+### 1. Pre-installation Virtual Environments with [`venv`](https://docs.python.org/3/library/venv.html) (Optional):
+It's a good package managing practice to create an easy to use virtual environment to install cadCAD. You can use the built in `venv` package.
+
+***Create** a virtual environment:*
+```bash
+$ python3 -m venv ~/cadcad
+```
+
+***Activate** an existing virtual environment:*
+```bash
+$ source ~/cadcad/bin/activate
+(cadcad) $
+```
+
+***Deactivate** virtual environment:*
+```bash
+(cadcad) $ deactivate
+$
+```
+
+### 2. Installation: 
+Requires [>= Python 3.6](https://www.python.org/downloads/) 
+
+**Install Using [pip](https://pypi.org/project/cadCAD/)** 
+```bash
+$ pip3 install cadcad==0.4.28
+```
+
+**Install all packages with requirement.txt**
+```bash
+$ pip3 install -r requirements.txt
+```

@@ -115,7 +115,7 @@ phase_durations[option] = st.sidebar.slider(
 )
 
 new_sector_onboarding_rate = st.sidebar.slider(
-    "RB Onboarding Rate (PiB)", 0.0, 500.0, phases[option].new_sector_rb_onboarding_rate, 0.1, key=f"{option}_onboarding_rate"
+    "RB Onboarding Rate (PiB)", 0.0, 1000.0, phases[option].new_sector_rb_onboarding_rate, 1.0, key=f"{option}_onboarding_rate"
 )
 
 new_sector_quality_factor = st.sidebar.slider(
@@ -123,7 +123,7 @@ new_sector_quality_factor = st.sidebar.slider(
 )
 
 new_sector_lifetime = st.sidebar.slider(
-    "New Sector Lifetime", 180, 360, phases[option].new_sector_lifetime, 1, key=f"{option}_lifetime"
+    "New Sector Lifetime", 180, 1200, phases[option].new_sector_lifetime, 1, key=f"{option}_lifetime"
 )
 
 renewal_probability = st.sidebar.slider(

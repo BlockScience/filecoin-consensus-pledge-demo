@@ -392,8 +392,10 @@ def s_sectors_renew(params,
     """
 
     # Find share of renewals
-    renew_share = (
-        1 + state['behaviour'].renewal_probability) ** state['delta_days'] - 1
+    # Assumption: Sectors are going to perform a `delta_days` amount of
+    # independent trials when renewing. It is possible that a sector
+    # renews more than 1x on a given timestep.
+    renew_share = state['behaviour'].daily_renewal_probability * state['delta_days']
     current_sectors_list = state['aggregate_sectors'].copy()
 
     if renew_share > 0:

@@ -21,11 +21,11 @@ def run_cadcad_model(duration_1,
                      new_sector_rb_onboarding_rate_1,
                      new_sector_quality_factor_1,
                      new_sector_lifetime_1,
-                     renewal_probability_1,
+                     daily_renewal_probability_1,
                      new_sector_rb_onboarding_rate_2,
                      new_sector_quality_factor_2,
                      new_sector_lifetime_2,
-                     renewal_probability_2,
+                     daily_renewal_probability_2,
                      days):
     
     def run_sim(tls):
@@ -33,13 +33,13 @@ def run_cadcad_model(duration_1,
                                                 new_sector_rb_onboarding_rate_1,
                                                 new_sector_quality_factor_1,
                                                 new_sector_lifetime_1,
-                                                renewal_probability_1,
+                                                daily_renewal_probability_1,
                                                 new_sector_lifetime_1)
         second_year = BehaviouralParams('second_year',
                                                 new_sector_rb_onboarding_rate_2,
                                                 new_sector_quality_factor_2,
                                                 new_sector_lifetime_2,
-                                                renewal_probability_2,
+                                                daily_renewal_probability_2,
                                                 new_sector_lifetime_2)
         params = ConsensusPledgeSweepParams(**{k: [v] for k, v in SINGLE_RUN_PARAMS.items()})
         params['target_locked_supply'] = [tls]

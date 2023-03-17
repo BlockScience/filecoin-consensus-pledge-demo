@@ -118,19 +118,19 @@ INITIAL_BEHAVIOURAL_PARAMS = {
                            new_sector_rb_onboarding_rate=1.0,
                            new_sector_quality_factor=2.0,
                            new_sector_lifetime=180,
-                           renewal_probability=0.02,
+                           daily_renewal_probability=0.02,
                            renewal_lifetime=180),
     270: BehaviouralParams('Phase 2',
                            new_sector_rb_onboarding_rate=1.0,
                            new_sector_quality_factor=2.0,
                            new_sector_lifetime=360,
-                           renewal_probability=0.02,
+                           daily_renewal_probability=0.02,
                            renewal_lifetime=360),
     9999: BehaviouralParams('Phase 3',
                            new_sector_rb_onboarding_rate=50.0,
                            new_sector_quality_factor=2.0,
                            new_sector_lifetime=180,
-                           renewal_probability=0.02,
+                           daily_renewal_probability=0.02,
                            renewal_lifetime=180)
 }
 

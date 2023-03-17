@@ -91,8 +91,8 @@ new_sector_lifetime_1 = st.sidebar.slider(
     "New Sector Lifetime", 180, 360, defaults["new_sector_lifetime_1"], 1, key="new_sector_lifetime_1"
 )
 
-renewal_probability_1 = st.sidebar.slider(
-    "Daily Renewal Probability (%)", 0.0, 30.0, defaults["renewal_probability_1"], 0.1, key="renewal_probability_1"
+daily_renewal_probability_1 = st.sidebar.slider(
+    "Daily Renewal Probability (%)", 0.0, 30.0, defaults["daily_renewal_probability_1"], 0.1, key="daily_renewal_probability_1"
 )
 
 st.sidebar.markdown(
@@ -111,8 +111,8 @@ new_sector_lifetime_2 = st.sidebar.slider(
     "New Sector Lifetime", 180, 360, defaults["new_sector_lifetime_2"], 1, key="new_sector_lifetime_2"
 )
 
-renewal_probability_2 = st.sidebar.slider(
-    "Daily Renewal Probability (%)", 0.0, 30.0, defaults["renewal_probability_2"], 0.1, key="renewal_probability_2"
+daily_renewal_probability_2 = st.sidebar.slider(
+    "Daily Renewal Probability (%)", 0.0, 30.0, defaults["daily_renewal_probability_2"], 0.1, key="daily_renewal_probability_2"
 )
 
 # st.sidebar.markdown("## Compare Against")
@@ -128,9 +128,9 @@ renewal_probability_2 = st.sidebar.slider(
 # Run model
 ############
 
-df = run_cadcad_model(duration_1, new_sector_rb_onboarding_rate_1, new_sector_quality_factor_1, new_sector_lifetime_1, renewal_probability_1 / 100,
+df = run_cadcad_model(duration_1, new_sector_rb_onboarding_rate_1, new_sector_quality_factor_1, new_sector_lifetime_1, daily_renewal_probability_1 / 100,
                       new_sector_rb_onboarding_rate_2, new_sector_quality_factor_2, new_sector_lifetime_2,
-                       renewal_probability_2 / 100, days)
+                       daily_renewal_probability_2 / 100, days)
 
 # Plot results
 ##########

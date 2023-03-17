@@ -8,8 +8,8 @@ new_sector_lifetime_1: 180
 new_sector_rb_onboarding_rate_2: 100.0
 new_sector_quality_factor_2: 4.0
 new_sector_lifetime_2: 180
-renewal_probability_1: 1.0
-renewal_probability_2: 1.0
+daily_renewal_probability_1: 1.0
+daily_renewal_probability_2: 1.0
 speed_to_latency:                  # seconds per simulation replay step
   slow: .5
   medium: .1

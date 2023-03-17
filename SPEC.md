@@ -19,7 +19,7 @@
 - Behavioural Params
     - `onboarding_rate (PiB/day)`
     - `onboarding_quality_factor ([1, 10])`
-    - `renewal_probability (%)`
+    - `daily_renewal_probability (%)`
 
 ## World State
 

@@ -22,6 +22,45 @@ and use them as arguments to the `cadCAD_tools.execution.easy_run` method. Refer
     5. Wait a bit and done!
 ## File structure
 
+```
+.
+├── LICENSE
+├── README.md
+├── SPEC.md
+├── app: The `streamlit` app
+│   ├── assets
+│   │   ├── icon.png
+│   │   └── logo.png
+│   ├── chart.py
+│   ├── const.yaml
+│   ├── description.py
+│   ├── glossary.py
+│   ├── main.py
+│   ├── model.py
+│   └── utils.py
+├── consensus_pledge_model: the `cadCAD` model as encapsulated by a Python Module
+│   ├── __init__.py
+│   ├── __main__.py
+│   ├── experiment.py: Code for running experiments
+│   ├── logic.py: All logic for substeps
+│   ├── params.py: System parameters
+│   ├── structure.py: The PSUB structure
+│   └── types.py: Types used in model
+├── notebooks: Notebooks for aiding in development
+│   ├── Testing.ipynb
+│   ├── nb_test_consensus_pledge_demo.py
+│   └── simulation_eda.ipynb
+├── profiling
+│   ├── output.png
+│   ├── output.pstats
+│   └── profile_default_run.sh
+├── requirements-dev.txt: Dev requirements
+├── requirements.txt: Production requirements
+└── tests: Test scenarios
+    ├── __init__.py
+    └── test_scenario.py
+```
+
 - `app/`: The `streamlit` app
 - `consensus_pledge_model/`: the `cadCAD` model as encapsulated by a Python Module
 - `data/`: Simulation / Post-processed datasets

@@ -84,7 +84,7 @@ def generate_default_phases():
                                 phase_default['rb_onboarding_rate'], 
                                 phase_default['quality_factor'], 
                                 phase_default['sector_lifetime'], 
-                                phase_default['renewal_probability'], 
+                                phase_default['renewal_probability'] / 100, 
                                 phase_default['sector_lifetime'])
         DEFAULT_PHASES[i] = params
     return (DEFAULT_PHASES, DEFAULT_PHASE_DURATIONS)
@@ -127,7 +127,7 @@ new_sector_lifetime = st.sidebar.slider(
 )
 
 renewal_probability = st.sidebar.slider(
-    "Daily Renewal Probability (%)", 0.00, 0.05, phases[option].renewal_probability, 0.01, key=f"{option}_renewal")
+    "Daily Renewal Probability (%)", 0.0, 20.0, phases[option].renewal_probability * 100, 0.5, key=f"{option}_renewal")
 
 
 renewal_lifetime = phases[option].new_sector_lifetime
@@ -138,7 +138,7 @@ phases[option] = BehaviouralParams(label,
                                    new_sector_onboarding_rate,
                                    new_sector_quality_factor,
                                    new_sector_lifetime,
-                                   renewal_probability,
+                                   renewal_probability / 100,
                                    renewal_lifetime)
 
 st.session_state['phases'] = phases
@@ -152,7 +152,9 @@ cumm_years = 0.0
 for k, v in sim_phase_durations.items():
     cumm_years += v
     sim_phase_durations[k] = cumm_years
-vlines = list(sim_phase_durations.values())[:-1]
+vlines = {f"Phase {k + 1}": v for k, v in sim_phase_durations.items()
+          if k >= 1 and k < len(sim_phase_durations)}
+
 
 sim_phases = {k: v for k, v in phases.items() if k <= phase_count}
 # Run model

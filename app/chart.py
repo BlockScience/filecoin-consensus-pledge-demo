@@ -43,8 +43,8 @@ class NetworkPowerPlotlyChart(PlotlyChart):
             #range_y=(0, 50_000),
             # log_y=True,
         )
-        for l in vline:
-            chart.add_vline(l, line_dash="dot")
+        for k, v in vline.items():
+            chart.add_vline(v, line_dash="dot",   annotation_text=k)
         return cls(chart)
 
 
@@ -64,8 +64,8 @@ class QAPowerPlotlyChart(PlotlyChart):
             #range_y=(0, 150_000),
             # log_y=True,
         )
-        for l in vline:
-            chart.add_vline(l, line_dash="dot")
+        for k, v in vline.items():
+            chart.add_vline(v, line_dash="dot",   annotation_text=k)
         return cls(chart)
 
         return cls(chart)
@@ -87,8 +87,8 @@ class EffectiveNetworkTimePlotlyChart(PlotlyChart):
             # range_x=cls.compose_x_domain(num_steps),
             #range_y=(2.5, 4.5),
         )
-        for l in vline:
-            chart.add_vline(l, line_dash="dot")
+        for k, v in vline.items():
+            chart.add_vline(v, line_dash="dot",   annotation_text=k)
         return cls(chart)
 
 
@@ -109,8 +109,8 @@ class RewardPlotlyChart(PlotlyChart):
             # range_x=cls.compose_x_domain(num_steps),
             #range_y=(60_000, 100_0000),
         )
-        for l in vline:
-            chart.add_vline(l, line_dash="dot")
+        for k, v in vline.items():
+            chart.add_vline(v, line_dash="dot",   annotation_text=k)
         chart.update_layout(legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -136,8 +136,8 @@ class RewardPerPowerPlotlyChart(PlotlyChart):
             # range_x=cls.compose_x_domain(num_steps),
             #range_y=(60_000, 100_0000),
         )
-        for l in vline:
-            chart.add_vline(l, line_dash="dot")
+        for k, v in vline.items():
+            chart.add_vline(v, line_dash="dot",   annotation_text=k)
         chart.update_layout(legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -165,8 +165,8 @@ class TokenDistributionPlotlyChart(PlotlyChart):
             #range_y=(0, 500_000_000),
             # log_y=True,
         )
-        for l in vline:
-            chart.add_vline(l, line_dash="dot")
+        for k, v in vline.items():
+            chart.add_vline(v, line_dash="dot",   annotation_text=k)
         chart.update_layout(legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -193,8 +193,8 @@ class TokenLockedDistributionPlotlyChart(PlotlyChart):
             #range_y=(0, 150_000_000),
             # log_y=True,
         )
-        for l in vline:
-            chart.add_vline(l, line_dash="dot")
+        for k, v in vline.items():
+            chart.add_vline(v, line_dash="dot",   annotation_text=k)
         chart.update_layout(legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -221,8 +221,8 @@ class CriticalCostPlotlyChart(PlotlyChart):
             #range_y=(0, 40_000_000),
             # log_y=True,
         )
-        for l in vline:
-            chart.add_vline(l, line_dash="dot")
+        for k, v in vline.items():
+            chart.add_vline(v, line_dash="dot",   annotation_text=k)
         chart.update_layout(legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -249,8 +249,8 @@ class CirculatingSurplusPlotlyChart(PlotlyChart):
             #range_y=(5, 5000),
             log_y=True
         )
-        for l in vline:
-            chart.add_vline(l, line_dash="dot")
+        for k, v in vline.items():
+            chart.add_vline(v, line_dash="dot",   annotation_text=k)
         chart.update_layout(legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -277,8 +277,8 @@ class CirculatingSupplyPlotlyChart(PlotlyChart):
             #range_y=(0, 1),
         )
         chart.update_yaxes(tickformat=".0%")
-        for l in vline:
-            chart.add_vline(l, line_dash="dot")
+        for k, v in vline.items():
+            chart.add_vline(v, line_dash="dot",   annotation_text=k)
         chart.update_layout(legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -312,8 +312,8 @@ class OnboardingCollateralPlotlyChart(PlotlyChart):
             # range_x=cls.compose_x_domain(num_steps),
             #range_y=(0, 8_000),
         )
-        for l in vline:
-            chart.add_vline(l, line_dash="dot")
+        for k, v in vline.items():
+            chart.add_vline(v, line_dash="dot",   annotation_text=k)
         chart.update_layout(legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -347,8 +347,8 @@ class RBOnboardingCollateralPlotlyChart(PlotlyChart):
             # range_x=cls.compose_x_domain(num_steps),
             #range_y=(0, 8_000),
         )
-        for l in vline:
-            chart.add_vline(l, line_dash="dot")
+        for k, v in vline.items():
+            chart.add_vline(v, line_dash="dot",   annotation_text=k)
         chart.update_layout(legend=dict(
             orientation="h",
             yanchor="bottom",

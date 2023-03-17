@@ -3,6 +3,7 @@ from consensus_pledge_model.params import YEAR
 from collections import defaultdict
 from copy import copy, deepcopy
 from consensus_pledge_model.types import *
+import scipy.stats as st
 
 # ## Time Tracking
 
@@ -392,10 +393,15 @@ def s_sectors_renew(params,
     """
 
     # Find share of renewals
+
     # Assumption: Sectors are going to perform a `delta_days` amount of
     # independent trials when renewing. It is possible that a sector
     # renews more than 1x on a given timestep.
-    renew_share = state['behaviour'].daily_renewal_probability * state['delta_days']
+    #renew_share = state['behaviour'].daily_renewal_probability * state['delta_days']
+
+    # Assumption: Sectors are going to attempt to renew daily until they're successful.
+    # No more attempts through the timestep will be done after that.
+    renew_share = st.binom.pmf(k=1, n=state['delta_days'], p=state['behaviour'].daily_renewal_probability)
     current_sectors_list = state['aggregate_sectors'].copy()
 
     if renew_share > 0:

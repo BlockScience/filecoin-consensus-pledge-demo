@@ -92,7 +92,7 @@ new_sector_lifetime_1 = st.sidebar.slider(
 )
 
 daily_renewal_probability_1 = st.sidebar.slider(
-    "Daily Renewal Probability (%)", 0.0, 30.0, defaults["daily_renewal_probability_1"], 0.1, key="daily_renewal_probability_1"
+    "Daily Renewal Probability (%)", 0.0, 100.0, defaults["daily_renewal_probability_1"], 0.1, key="daily_renewal_probability_1"
 )
 
 st.sidebar.markdown(
@@ -112,7 +112,7 @@ new_sector_lifetime_2 = st.sidebar.slider(
 )
 
 daily_renewal_probability_2 = st.sidebar.slider(
-    "Daily Renewal Probability (%)", 0.0, 30.0, defaults["daily_renewal_probability_2"], 0.1, key="daily_renewal_probability_2"
+    "Daily Renewal Probability (%)", 0.0, 100.0, defaults["daily_renewal_probability_2"], 0.1, key="daily_renewal_probability_2"
 )
 
 # st.sidebar.markdown("## Compare Against")

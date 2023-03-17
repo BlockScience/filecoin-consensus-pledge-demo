@@ -20,18 +20,17 @@ import streamlit as st
 def run_cadcad_model(phase_durations: dict[int, float],
                      phases: dict[int, BehaviouralParams]):
     
-    total_duration = sum(phase_durations.values())
-    timesteps = int(total_duration * 365.25 / TIMESTEP_IN_DAYS)
+    total_duration = max(phase_durations.values())
+    timesteps = int(total_duration * 365.25 / TIMESTEP_IN_DAYS) + 1
 
     
     def run_sim(tls):
-
         behaviour_param_dict = {}
         for i_phase, phase in phases.items():
             if i_phase == len(phases):
                 duration = inf
             else:
-                duration = int(phase_durations[i_phase] * 365.25 / TIMESTEP_IN_DAYS)
+                duration = int(phase_durations[i_phase] * 365.25)
             behaviour_param_dict[duration] = phase
 
         params = ConsensusPledgeSweepParams(**{k: [v] for k, v in SINGLE_RUN_PARAMS.items()})

@@ -39,7 +39,8 @@ def s_behaviour(params: ConsensusPledgeParams,
                  signal: Signal) -> VariableUpdate:
     behaviour_params = params['behavioural_params']
     filtered_params = {k: v for k, v in behaviour_params.items() if k >= state['days_passed']}
-    value = list(filtered_params.values())[0]
+    lowest_key = min(filtered_params.keys())
+    value = filtered_params[lowest_key]
     return ('behaviour', value)
 
 # ## Network

@@ -72,23 +72,30 @@ phase_count = st.sidebar.slider(
     "Number of Phases", 1, len(phase_defaults), defaults["phase_count"], 1, key="phase_count"
 )
 
-DEFAULT_PHASES = {}
-DEFAULT_PHASE_DURATIONS = {}
-for i in range(1, len(phase_defaults) + 1):
-    phase_default = phase_defaults[i]
-    DEFAULT_PHASE_DURATIONS[i] = phase_default['duration']
-    params = BehaviouralParams(i, 
-                               phase_default['rb_onboarding_rate'], 
-                               phase_default['quality_factor'], 
-                               phase_default['sector_lifetime'], 
-                               phase_default['renewal_probability'], 
-                               phase_default['sector_lifetime'])
-    DEFAULT_PHASES[i] = params
 
-if 'phases' not in vars():
-    phases = deepcopy(DEFAULT_PHASES)
-if 'phase_durations' not in vars():
-    phase_durations = deepcopy(DEFAULT_PHASE_DURATIONS)
+
+def generate_default_phases():
+    DEFAULT_PHASES = {}
+    DEFAULT_PHASE_DURATIONS = {}
+    for i in range(1, len(phase_defaults) + 1):
+        phase_default = phase_defaults[i]
+        DEFAULT_PHASE_DURATIONS[i] = phase_default['duration']
+        params = BehaviouralParams(i, 
+                                phase_default['rb_onboarding_rate'], 
+                                phase_default['quality_factor'], 
+                                phase_default['sector_lifetime'], 
+                                phase_default['renewal_probability'], 
+                                phase_default['sector_lifetime'])
+        DEFAULT_PHASES[i] = params
+    return (DEFAULT_PHASES, DEFAULT_PHASE_DURATIONS)
+
+if ('phases' not in st.session_state) or ('phase_durations' not in st.session_state):
+    (phases, phase_durations) = generate_default_phases()
+    st.session_state['phases'] = phases
+    st.session_state['phase_durations'] = phase_durations
+else:
+    phases = st.session_state['phases']
+    phase_durations = st.session_state['phase_durations']
 
 st.sidebar.markdown(
 """### Phase Configuration""")
@@ -100,29 +107,31 @@ option = int(st.sidebar.selectbox(
     key='phase_select'))
 
 
-phases = deepcopy(phases)
-phase_durations = deepcopy(phase_durations)
+# phases = deepcopy(phases)
+#phase_durations = deepcopy(phase_durations)
 
 phase_durations[option] = st.sidebar.slider(
-    "Duration in Years", 0.0, 4.0, phase_defaults[option]['duration'], 0.25, key=f"{option}_duration"
+    "Duration in Years", 0.0, 4.0, phase_durations[option], 0.25, key=f"{option}_duration"
 )
 
 new_sector_onboarding_rate = st.sidebar.slider(
-    "RB Onboarding Rate (PiB)", 0.0, 500.0, phase_defaults[option]['rb_onboarding_rate'], 0.1, key=f"{option}_onboarding_rate"
+    "RB Onboarding Rate (PiB)", 0.0, 500.0, phases[option].new_sector_rb_onboarding_rate, 0.1, key=f"{option}_onboarding_rate"
 )
 
 new_sector_quality_factor = st.sidebar.slider(
-    "RB Onboarding QF", 1.0, 20.0, phase_defaults[option]['quality_factor'], 0.1, key=f"{option}_quality_factor"
+    "RB Onboarding QF", 1.0, 20.0, phases[option].new_sector_quality_factor, 0.1, key=f"{option}_quality_factor"
 )
 
 new_sector_lifetime = st.sidebar.slider(
-    "New Sector Lifetime", 180, 360, phase_defaults[option]['sector_lifetime'], 1, key=f"{option}_lifetime"
+    "New Sector Lifetime", 180, 360, phases[option].new_sector_lifetime, 1, key=f"{option}_lifetime"
 )
-renewal_lifetime = phases[option].new_sector_lifetime
 
 renewal_probability = st.sidebar.slider(
-    "Daily Renewal Probability (%)", 0.0, 10.0, phase_defaults[option]['renewal_probability'], 0.1, key=f"{option}_renewal"
-)
+    "Daily Renewal Probability (%)", 0.00, 0.05, phases[option].renewal_probability, 0.01, key=f"{option}_renewal")
+
+
+renewal_lifetime = phases[option].new_sector_lifetime
+
 
 label = phases[option].label
 phases[option] = BehaviouralParams(label, 
@@ -132,13 +141,24 @@ phases[option] = BehaviouralParams(label,
                                    renewal_probability,
                                    renewal_lifetime)
 
-sim_phase_durations = {k: v for k, v in phase_durations.items() if k <= phase_count}
-sim_phases = {k: v for k, v in phases.items() if k <= phase_count}
+st.session_state['phases'] = phases
+st.session_state['phase_durations'] = phase_durations
 
+
+
+sim_phase_durations = {k: v for k, v in phase_durations.items() if k <= phase_count}
+
+cumm_years = 0.0
+for k, v in sim_phase_durations.items():
+    cumm_years += v
+    sim_phase_durations[k] = cumm_years
+vlines = list(sim_phase_durations.values())
+
+sim_phases = {k: v for k, v in phases.items() if k <= phase_count}
 # Run model
 ############
 
-df = run_cadcad_model(phase_durations, sim_phases)
+df = run_cadcad_model(sim_phase_durations, sim_phases)
 
 # Plot results
 ##########
@@ -148,25 +168,25 @@ with plot_container:
     num_steps = df.timestep.nunique()
     vline = 0 / 365.25 # TODO
     st.markdown("### Network Power")
-    network_power_chart = NetworkPowerPlotlyChart.build(user_df, num_steps, vline)
+    network_power_chart = NetworkPowerPlotlyChart.build(user_df, num_steps, vlines)
     qa_power_chart = QAPowerPlotlyChart.build(user_df, num_steps)
 
     st.markdown("### Token Distribution & Supply")
-    circulating_supply_chart = CirculatingSupplyPlotlyChart.build(df, num_steps, vline)
-    token_dist_chart = TokenDistributionPlotlyChart.build(df, num_steps, vline)
-    locked_token_dist_chart = TokenLockedDistributionPlotlyChart.build(df, num_steps, vline)
+    circulating_supply_chart = CirculatingSupplyPlotlyChart.build(df, num_steps, vlines)
+    token_dist_chart = TokenDistributionPlotlyChart.build(df, num_steps, vlines)
+    locked_token_dist_chart = TokenLockedDistributionPlotlyChart.build(df, num_steps, vlines)
 
     st.markdown("### Security")
-    critical_cost_chart = CriticalCostPlotlyChart.build(df, num_steps, vline)
-    circulating_surplus_chart = CirculatingSurplusPlotlyChart.build(df, num_steps, vline)
+    critical_cost_chart = CriticalCostPlotlyChart.build(df, num_steps, vlines)
+    circulating_surplus_chart = CirculatingSurplusPlotlyChart.build(df, num_steps, vlines)
 
     st.markdown("### Sector Onboarding")
-    onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(df, num_steps, vline)
-    rb_onboarding_collateral_chart = RBOnboardingCollateralPlotlyChart.build(df, num_steps, vline)
+    onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(df, num_steps, vlines)
+    rb_onboarding_collateral_chart = RBOnboardingCollateralPlotlyChart.build(df, num_steps, vlines)
     
     st.markdown("### Sector Reward")
-    reward_chart = RewardPlotlyChart.build(user_df, num_steps, vline)
-    reward_per_power_chart = RewardPerPowerPlotlyChart.build(user_df, num_steps, vline)
+    reward_chart = RewardPlotlyChart.build(user_df, num_steps, vlines)
+    reward_per_power_chart = RewardPerPowerPlotlyChart.build(user_df, num_steps, vlines)
     
 # Download data
 

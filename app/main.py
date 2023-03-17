@@ -152,7 +152,7 @@ cumm_years = 0.0
 for k, v in sim_phase_durations.items():
     cumm_years += v
     sim_phase_durations[k] = cumm_years
-vlines = list(sim_phase_durations.values())
+vlines = list(sim_phase_durations.values())[:-1]
 
 sim_phases = {k: v for k, v in phases.items() if k <= phase_count}
 # Run model
@@ -169,7 +169,7 @@ with plot_container:
     vline = 0 / 365.25 # TODO
     st.markdown("### Network Power")
     network_power_chart = NetworkPowerPlotlyChart.build(user_df, num_steps, vlines)
-    qa_power_chart = QAPowerPlotlyChart.build(user_df, num_steps)
+    qa_power_chart = QAPowerPlotlyChart.build(user_df, num_steps, vlines)
 
     st.markdown("### Token Distribution & Supply")
     circulating_supply_chart = CirculatingSupplyPlotlyChart.build(df, num_steps, vlines)

@@ -1,8 +1,8 @@
-# filecoin-baseline-incentives
+# Filecoin Consensus Pledge Interactive Calculator
 
-> TODO: Re-factor this document to reflect that'we re doing an Consesus Pledge Model
+## Executive Summary
 
-Interactive Calculator for the economic incentives around the Filecoin Baseline Minting based on cadCAD + Streamlit.
+This github repository hosts both the cadCAD model for monitoring consensus pledge as well as the streamlit dashboard which displays it. Economic incentives can be explored through scenario analysis which cadCAD supports using monte carlo simulations
 
 ## How to run it
 
@@ -20,6 +20,7 @@ and use them as arguments to the `cadCAD_tools.execution.easy_run` method. Refer
     3. Create an app for the repo pointing to `app/main.py`
     4. **Make sure to use Python 3.9 on the Advanced Settings!**
     5. Wait a bit and done!
+
 ## File structure
 
 ```

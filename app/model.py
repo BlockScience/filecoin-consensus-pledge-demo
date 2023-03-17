@@ -92,7 +92,7 @@ def post_process_results(df):
         .assign(fil_minted=lambda df: df.token_distribution.map(lambda x: x.minted))
         .assign(years_passed=lambda x: x.days_passed / C["days_per_year"])
         .assign(critical_cost=lambda df: (df.power_qa * 0.33) * df.initial_pledge_per_new_qa_power)
-        .assign(circulating_surplus=lambda df: df.fil_circulating / df.critical_cost - 1)
+        .assign(circulating_surplus=lambda df: df.fil_circulating / df.critical_cost)
         .assign(circulating_supply=lambda df: df.fil_circulating / df.fil_available)
         .assign(locked_supply=lambda df: df.fil_locked / df.fil_available)
         .assign(daily_reward=lambda df: df.daily_simple_reward + df.daily_baseline_reward)

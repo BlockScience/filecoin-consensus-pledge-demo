@@ -9,35 +9,29 @@ def description():
         
 ### Simulations
 
-In order to visualize this behavior, we simulate the baseline reward under different scenarios then compare them directly. Specifically, the "Mining Utility" metric captures the percentage advantage a miner has as compared to a scenario in which the Network Power is always equal to the Baseline.
+This app allows you to interactively understand the Consensus Pledge mechanism by showcasing the evolution of various network metrics and comparing them to a world where Filecoin does not require a Consensus Pledge collateral.
 
-This app displays four scenarios: two for the user (`consensus_pledge_on` and `consensus_pledge_off`).
-
-The left sidebar has several options for controlling how the `user` scenarios for the Filecoin Network Power grow with time.
+You have full control over various parameters to test how the network evolves under different conditions. Additionally, you can set them differently for two phases and test the effects of a changing environment.  
 
 ### Scenarios
 
 #### User
 
-The default settings for the `user` scenarios encapsulate the following behavior: the network doesn't grow initially, later grows at the same rate as the Baseline Function, suddenly accelerates several years thereafter, then stabilizes eventually.
-
-In order to directly compare the effect of turning Baseline Minting on or off, we show a second `user` scenario—`user-baseline-deactivated`—analogous to deploying a fictious FIP in which "Baseline Minting behaves like Simple Minting".
-
-*Technical specifics: this is done by iteratively increasing the cumulative capped power of the Baseline Function rather than the Network Power.*
-
-#### Optimistic
-
-In the `optimistic` scenario, the Network Power grows 5% faster than the Baseline Function.
-
-#### Baseline
-
-In the `baseline` scenario, the Network Power is always equal to the Baseline Function.
+The Consensus Pledge has various interplays between effects and depends on a multitude of factors. As such, its effects are not always very intuitive. The educational calculator can help you to visualize these effects and to consider how various metrics might evolve.
+The app displays two scenarios: One for a Filecoin system that requires a Consensus Pledge, and one where there is no Consensus Pledge required. 
+The sidebar on the left lets you set a total time for your simulation and then adjust the scenario for two distinct phases. There are five adjustments that can be tested for each phase:
+I) First, you can adjust the duration of each phase. This lets you test the evolution under various scenarios, for example a long period of consistent growth, with a brief short drop after. 
+Then, you can adjust some assumptions about new sectors that are onboarding:
+II) The Raw-Byte Power (in PiB) onboarded per day. Varying this lets you test different growth scenarios on a Raw-Byte Basis.
+III) The Quality Factor of this newly onboarded RB Power. The Quality Factor will determine the additional QAP added by the sector, as well as the network QAP over time. 
+IV) The Sector Lifetime, measured in days. You can go from the minimum 6 month Sector Lifetime up to a full year of Sector Lifetime, incremented in days. 
+V) The daily probability that a sector will be renewed. Each day of the simulation, sectors are reaching the end of their lifetime. This parameter lets you vary the likelihood of them being renewed. 
 
 ### References
 
-[1]: Filecoin Baseline Incentives GitHub Repository: https://github.com/BlockScience/filecoin-baseline-incentives
+[1]: Filecoin Consensus Pledge GitHub Repository: https://github.com/BlockScience/filecoin-consensus-pledge-demo
 
-[2]: Baseline Minting Incentives (Danilo Lessa Bernardineli, Gabriel Lefundes, Burrrata, Jeff Emmett, Jessica Zartler, ZX Zhang): https://medium.com/block-science/baseline-minting-incentives-743b229b9b80
+[2]: Filecoin Consensus Pledge (Danilo Lessa Bernardineli, ...): 
 
 [3]: Filecoin Network Crosses Baseline Sustainability Target for First Time
  (Danilo Lessa Bernardineli, Gabriel Lefundes, Jamsheed Shorish, ZX Zhang, Michael Zargham): https://filecoin.io/blog/posts/filecoin-network-crosses-baseline-sustainability-target-for-first-time/

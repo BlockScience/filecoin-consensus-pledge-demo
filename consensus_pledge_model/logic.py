@@ -404,6 +404,9 @@ def s_sectors_renew(params,
     renew_share = st.binom.pmf(k=1, n=state['delta_days'], p=state['behaviour'].daily_renewal_probability)
     current_sectors_list = state['aggregate_sectors'].copy()
 
+    storage_pledge_old = 0.0
+    consensus_pledge_old = 0.0
+
     if renew_share > 0:
         power_rb_renew: PiB = 0.0
         power_qa_renew: QA_PiB = 0.0
@@ -426,6 +429,8 @@ def s_sectors_renew(params,
             # Subtract values from the non-renewed sectors
             aggregate_sector.power_rb -= sector_power_rb_renew
             aggregate_sector.power_qa -= sector_power_qa_renew
+            storage_pledge_old += sector_storage_pledge_renew
+            consensus_pledge_old += sector_consensus_pledge_renew
             aggregate_sector.storage_pledge -= sector_storage_pledge_renew
             aggregate_sector.consensus_pledge -= sector_consensus_pledge_renew
 
@@ -444,6 +449,13 @@ def s_sectors_renew(params,
 
         consensus_pledge_renew = state['consensus_pledge_per_new_qa_power']
         consensus_pledge_renew *= power_qa_renew
+
+        initial_pledge_old = storage_pledge_old + consensus_pledge_old
+        initial_pledge_new = storage_pledge_renew + consensus_pledge_renew
+        if initial_pledge_old > initial_pledge_new:
+            storage_pledge_renew = storage_pledge_old
+            consensus_pledge_renew = consensus_pledge_old
+        
 
         reward_schedule_renew = dict(reward_schedule_renew)
 

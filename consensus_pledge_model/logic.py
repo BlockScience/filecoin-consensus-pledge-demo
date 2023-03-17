@@ -3,6 +3,7 @@ from consensus_pledge_model.params import YEAR
 from collections import defaultdict
 from copy import copy
 from consensus_pledge_model.types import *
+import scipy.stats as st
 
 # ## Time Tracking
 
@@ -358,6 +359,7 @@ def s_sectors_onboard(params: ConsensusPledgeParams,
         # Find what the pledges should be
         storage_pledge = state['storage_pledge_per_new_qa_power'] * power_qa_new
         consensus_pledge = state['consensus_pledge_per_new_qa_power'] * power_qa_new
+        
         # Create new aggregate sector
         reward_schedule = {}
         new_sectors = AggregateSector(power_rb=power_rb_new,
@@ -392,9 +394,19 @@ def s_sectors_renew(params,
     """
 
     # Find share of renewals
-    renew_share = (
-        1 + state['behaviour'].renewal_probability) ** state['delta_days'] - 1
+
+    # Assumption: Sectors are going to perform a `delta_days` amount of
+    # independent trials when renewing. It is possible that a sector
+    # renews more than 1x on a given timestep.
+    renew_share = state['behaviour'].daily_renewal_probability * state['delta_days']
+
+    # Assumption: Sectors are going to attempt to renew daily until they're successful.
+    # No more attempts through the timestep will be done after that.
+    # renew_share = st.binom.pmf(k=1, n=state['delta_days'], p=state['behaviour'].daily_renewal_probability)
+    
     current_sectors_list = state['aggregate_sectors'].copy()
+    storage_pledge_old = 0.0
+    consensus_pledge_old = 0.0
 
     if renew_share > 0:
         power_rb_renew: PiB = 0.0
@@ -418,6 +430,8 @@ def s_sectors_renew(params,
             # Subtract values from the non-renewed sectors
             aggregate_sector.power_rb -= sector_power_rb_renew
             aggregate_sector.power_qa -= sector_power_qa_renew
+            storage_pledge_old += sector_storage_pledge_renew
+            consensus_pledge_old += sector_consensus_pledge_renew
             aggregate_sector.storage_pledge -= sector_storage_pledge_renew
             aggregate_sector.consensus_pledge -= sector_consensus_pledge_renew
 
@@ -436,6 +450,13 @@ def s_sectors_renew(params,
 
         consensus_pledge_renew = state['consensus_pledge_per_new_qa_power']
         consensus_pledge_renew *= power_qa_renew
+
+        initial_pledge_old = storage_pledge_old + consensus_pledge_old
+        initial_pledge_new = storage_pledge_renew + consensus_pledge_renew
+        if initial_pledge_old > initial_pledge_new:
+            storage_pledge_renew = storage_pledge_old
+            consensus_pledge_renew = consensus_pledge_old
+        
 
         reward_schedule_renew = dict(reward_schedule_renew)
 

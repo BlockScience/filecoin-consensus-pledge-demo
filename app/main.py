@@ -84,7 +84,7 @@ def generate_default_phases():
                                 phase_default['rb_onboarding_rate'], 
                                 phase_default['quality_factor'], 
                                 phase_default['sector_lifetime'], 
-                                phase_default['renewal_probability'] / 100, 
+                                phase_default['daily_renewal_probability'] / 100, 
                                 phase_default['sector_lifetime'])
         DEFAULT_PHASES[i] = params
     return (DEFAULT_PHASES, DEFAULT_PHASE_DURATIONS)
@@ -96,6 +96,7 @@ if ('phases' not in st.session_state) or ('phase_durations' not in st.session_st
 else:
     phases = st.session_state['phases']
     phase_durations = st.session_state['phase_durations']
+
 
 st.sidebar.markdown(
 """### Phase Configuration""")
@@ -126,8 +127,8 @@ new_sector_lifetime = st.sidebar.slider(
     "New Sector Lifetime", 180, 1200, phases[option].new_sector_lifetime, 1, key=f"{option}_lifetime"
 )
 
-renewal_probability = st.sidebar.slider(
-    "Daily Renewal Probability (%)", 0.0, 20.0, phases[option].renewal_probability * 100, 0.5, key=f"{option}_renewal")
+daily_renewal_probability = st.sidebar.slider(
+    "Daily Renewal Probability (%)", 0.0, 20.0, phases[option].daily_renewal_probability * 100, 0.5, key=f"{option}_renewal")
 
 
 renewal_lifetime = phases[option].new_sector_lifetime
@@ -138,7 +139,7 @@ phases[option] = BehaviouralParams(label,
                                    new_sector_onboarding_rate,
                                    new_sector_quality_factor,
                                    new_sector_lifetime,
-                                   renewal_probability / 100,
+                                   daily_renewal_probability / 100,
                                    renewal_lifetime)
 
 st.session_state['phases'] = phases

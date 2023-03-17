@@ -250,7 +250,7 @@ class BehaviouralParams():
     # Lifetime of the new sector
     new_sector_lifetime: Days
     # Probability that sector renews at expiration
-    renewal_probability: float
+    daily_renewal_probability: float
     # Lifetime to use if sector is renewed
     renewal_lifetime: Days
 

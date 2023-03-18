@@ -234,6 +234,6 @@ with download_container:
     st.download_button(
         label="Download",
         data=csv,
-        file_name="filecoin_basefunc_sim_results.csv",
+        file_name="results.csv",
         mime="text/csv",
     )

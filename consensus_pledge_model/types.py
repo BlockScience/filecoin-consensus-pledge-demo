@@ -1,6 +1,7 @@
 from typing import Annotated, TypedDict, Union
 from math import exp, log, nan
 from dataclasses import dataclass
+from dataclasses_json import dataclass_json
 
 
 Days = Annotated[float, 'days']  # Number of days
@@ -239,6 +240,7 @@ class TokenDistribution():
         return self.available - self.locked
 
 
+@dataclass_json
 @dataclass(frozen=True)
 class BehaviouralParams():
     # Label of behavior
@@ -253,6 +255,7 @@ class BehaviouralParams():
     daily_renewal_probability: float
     # Lifetime to use if sector is renewed
     renewal_lifetime: Days
+    
 
 
 @dataclass

@@ -9,3 +9,4 @@ plotly
 matplotlib
 numpy
 joblib
+dataclasses_json

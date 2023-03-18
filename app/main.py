@@ -8,7 +8,10 @@ from model import run_cadcad_model
 from utils import load_constants
 from consensus_pledge_model.types import BehaviouralParams
 from copy import deepcopy
+from dataclasses import dataclass
+from dataclasses_json import dataclass_json
 C = CONSTANTS = load_constants()
+import json
 
 # Define layout
 
@@ -145,7 +148,34 @@ phases[option] = BehaviouralParams(label,
 st.session_state['phases'] = phases
 st.session_state['phase_durations'] = phase_durations
 
+@dataclass_json
+@dataclass
+class CalculatorSimParams():
+    phase_count: int
+    phases: dict[int, BehaviouralParams]
+    phase_durations: dict[int, float]
 
+params = CalculatorSimParams(phase_count, phases, phase_durations)
+
+st.sidebar.download_button(
+    label="Download Parameters",
+    data=params.to_json(),
+    file_name="sim_params.json",
+    mime="text/json",
+)
+
+uploaded_file = st.sidebar.file_uploader(
+    label="Read Parameters",
+    type=['json']
+)
+
+if uploaded_file is not None:
+    params = CalculatorSimParams.from_json(uploaded_file.read())
+    phase_count = params.phase_count
+    phase_durations = params.phase_durations
+    phases = params.phases
+    st.session_state['phases'] = phases
+    st.session_state['phase_durations'] = phase_durations
 
 sim_phase_durations = {k: v for k, v in phase_durations.items() if k <= phase_count}
 
@@ -155,7 +185,6 @@ for k, v in sim_phase_durations.items():
     sim_phase_durations[k] = cumm_years
 vlines = {f"Phase {k + 1}": v for k, v in sim_phase_durations.items()
           if k >= 1 and k < len(sim_phase_durations)}
-
 
 sim_phases = {k: v for k, v in phases.items() if k <= phase_count}
 # Run model

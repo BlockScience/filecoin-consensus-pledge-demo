@@ -127,8 +127,8 @@ new_sector_lifetime = st.sidebar.slider(
     "New Sector Lifetime", 180, 1200, phases[option].new_sector_lifetime, 1, key=f"{option}_lifetime"
 )
 
-daily_renewal_probability = st.sidebar.slider(
-    "Daily Renewal Probability (%)", 0.0, 10.0, phases[option].daily_renewal_probability * 100, 0.5, key=f"{option}_renewal")
+monthly_renewal_probability = st.sidebar.slider(
+    "Monthly Renewal Probability (%)", 0.0, 20.0, phases[option].daily_renewal_probability * 100 * 30, 0.5, key=f"{option}_renewal")
 
 
 renewal_lifetime = phases[option].new_sector_lifetime
@@ -139,7 +139,7 @@ phases[option] = BehaviouralParams(label,
                                    new_sector_onboarding_rate,
                                    new_sector_quality_factor,
                                    new_sector_lifetime,
-                                   daily_renewal_probability / 100,
+                                   monthly_renewal_probability / (100 * 30),
                                    renewal_lifetime)
 
 st.session_state['phases'] = phases

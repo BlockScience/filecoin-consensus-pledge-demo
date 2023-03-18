@@ -12,7 +12,7 @@ phase_config:
     rb_onboarding_rate: 1.0
     quality_factor: 1.5
     sector_lifetime: 180
-    daily_renewal_probability: 0.5
+    daily_renewal_probability: 0.4
   2:
     duration: 0.5
     rb_onboarding_rate: 200.0
@@ -24,16 +24,16 @@ phase_config:
     rb_onboarding_rate: 1.0
     quality_factor: 5.5
     sector_lifetime: 360
-    daily_renewal_probability: 0.5 
+    daily_renewal_probability: 0.4 
   4:
     duration: 2.0
     rb_onboarding_rate: 100.0
     quality_factor: 6.5
     sector_lifetime: 360
-    daily_renewal_probability: 0.5 
+    daily_renewal_probability: 0.4 
   5:
     duration: 1.0
     rb_onboarding_rate: 1.0
     quality_factor: 7.5
     sector_lifetime: 360
-    daily_renewal_probability: 0.5 
+    daily_renewal_probability: 0.4 

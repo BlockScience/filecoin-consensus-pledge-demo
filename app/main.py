@@ -111,23 +111,23 @@ option = int(st.sidebar.selectbox(
 # phases = deepcopy(phases)
 #phase_durations = deepcopy(phase_durations)
 
-phase_durations[option] = st.sidebar.slider(
+phase_durations[option] = st.sidebar.number_input(
     "Duration in Years", 0.0, 4.0, phase_durations[option], 0.25, key=f"{option}_duration"
 )
 
-new_sector_onboarding_rate = st.sidebar.slider(
+new_sector_onboarding_rate = st.sidebar.number_input(
     "RB Onboarding Rate (PiB)", 0.0, 1000.0, phases[option].new_sector_rb_onboarding_rate, 1.0, key=f"{option}_onboarding_rate"
 )
 
-new_sector_quality_factor = st.sidebar.slider(
+new_sector_quality_factor = st.sidebar.number_input(
     "RB Onboarding QF", 1.0, 20.0, phases[option].new_sector_quality_factor, 0.1, key=f"{option}_quality_factor"
 )
 
-new_sector_lifetime = st.sidebar.slider(
+new_sector_lifetime = st.sidebar.number_input(
     "New Sector Lifetime", 180, 1200, phases[option].new_sector_lifetime, 1, key=f"{option}_lifetime"
 )
 
-monthly_renewal_probability = st.sidebar.slider(
+monthly_renewal_probability = st.sidebar.number_input(
     "Monthly Renewal Probability (%)", 0.0, 20.0, phases[option].daily_renewal_probability * 100 * 30, 0.5, key=f"{option}_renewal")
 
 

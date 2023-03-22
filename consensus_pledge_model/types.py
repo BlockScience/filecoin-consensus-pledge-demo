@@ -255,7 +255,6 @@ class BehaviouralParams():
     daily_renewal_probability: float
     # Lifetime to use if sector is renewed
     renewal_lifetime: Days
-    
 
 
 @dataclass

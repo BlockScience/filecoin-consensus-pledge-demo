@@ -245,8 +245,6 @@ class TokenDistribution():
 class BehaviouralParams():
     # Label of behavior
     label: str
-    # Duration of phase
-    phase_durations: Year
     # Onboarding rate for new sectors in raw byte power
     new_sector_rb_onboarding_rate: PiB_per_Day
     # Factor for the quality adjustment
@@ -254,7 +252,7 @@ class BehaviouralParams():
     # Lifetime of the new sector
     new_sector_lifetime: Days
     # Probability that sector renews at expiration
-    monthly_renewal_probability: float
+    daily_renewal_probability: float
     # Lifetime to use if sector is renewed
     renewal_lifetime: Days
 

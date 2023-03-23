@@ -25,9 +25,9 @@ st.markdown("# Filecoin Consensus Pledge Educational Calculator")
 
 st.markdown(
     """
-This app allows you to **interactively understand Baseline Minting** through the lens of both mining incentives and **crossing the Baseline Function up or down**.
+This app allows you to interactively understand the Consensus Pledge mechanism by showcasing the evolution of various network metrics and comparing them to a world where Filecoin stops requiring a Consensus Pledge collateral.
 
-You have full control over the raw-bytes Network Power trajectory! That's the `user`, and by tweaking the `How long? (in years since last change)` and `rb-NP growth (as a fraction of the baseline growth)` fields for each stage, you can **observe its behavior, and compare to it to that of other baseline scenarios.**
+You have full control over various parameters to test how the network evolves under different conditions. Additionally, you can test specific scenarios by setting distinct phases to test the effects of a changing environment.  
 """
 )
 

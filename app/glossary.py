@@ -26,20 +26,25 @@ When a Storage Provider onboards new storage, they must provide two collaterals 
 #### Storage Pledge
 The Storage Pledge collateral serves to ensure Clients against Storage Provider faults and penalties. The Storage Pledge is computed as an estimate of 20days of Block Rewards earned by the onboarded sector. 
 
-#### Consensus Pledge (TO DO: formula)
-The Consensus Pledge collateral provides additional security against consensus attacks on the network. 
+#### Consensus Pledge 
+The Consensus Pledge collateral provides additional security against consensus attacks on the network.
+The size of the required Consensus Pledge depends on the Target Locked Supply - a governance tunable parameter targetting a certain fraction of the Circulating Supply to be locked up - and the relative size of newly onboarded QAP to Baseline Power or NetworkQAP, whichever is higher.  
 More information on the Consensus Pledge and its dynamics can be found in the description and the references. 
-It is computed as: $SectorConsensusPledge(t) = TargetLockedSupply * CirculatingSupply(t) * \frac{SectorQAP}{max(BaselinePower(t), NetworkQAPEstimate(t))}$
+It is computed as:
+
+SectorConsensusPledge(t) = TLS * CirculatingSupply(t) * SectorQAP / {max(BaselinePower(t), NetworkQAPEstimate(t)}
 
 ### Token Distribution
 The distribution of FIL over the ecosystem is constantly evolving and has effects on mechanisms such as the Consensus Pledge. 
 
 #### Available Tokens
 All FIL that are currently in "existence", calculated as:
+
 Available FIL = FIL that have been minted + FIL that have been vested - FIL that have been burnt
 
 #### Locked Tokens
 Some FIL are not actively in circulation and cannot be used until unlocked.
+
 Locked FIL = Locked Block Rewards + Miner Collaterals 
 
 ##### Locked Block Rewards
@@ -50,6 +55,7 @@ When a Storage Provider onboards new storage, they must provide the Storage Pled
 
 #### Circulating Tokens
 All the FIL that is in circulation and can be immediately transferred by stakeholders (and attackers, as further seen through the Circulating Surplus metric). This is the supply that users have available for deal-making and actions on the secondary market. 
+
 Circulating FIL = Available FIL - Locked FIL
 
 ### Sector Metrics
@@ -67,6 +73,7 @@ The Consensus Pledge serves to protect the network from attackers gaining a 33% 
 #### Critical Cost
 The Critical Cost metric allows users to test how much FIL an attacker would have to acquire to have the means of onboarding enough storage for a share of 33% of Network QAP. 
 The Critical Cost is calculated as:
+
 CC = OnboardingPledge per QAP * Network QAP * 1/3 
 
 #### Circulating Surplus
@@ -82,12 +89,12 @@ A mechanism for issuing Filecoin as storage mining rewards through a function th
 
 #### Baseline Minting
 
-Similiar to Simple Minting, but uses the concept of an "Effective Network Time," rather than the "time since launch," for issuing rewards.
+Similiar to Simple Minting, but uses the concept of an "Effective Network Time," rather than the "time since launch," for issuing rewards. This allows Baseline Minting to dynamically adjust minting depending on the network storage meeting a baseline target.
 
 ## References
 
 [1]: Baseline Minting Incentives (Danilo Lessa Bernardineli, Gabriel Lefundes, Burrrata, Jeff Emmett, Jessica Zartler and ZX Zhang). https://medium.com/block-science/baseline-minting-incentives-743b229b9b80
 
-[2]:
+[2]: Reviewing the FIP-0056 and CDM Debate on Filecoin (BlockScience, Danilo Lessa Bernardineli). https://medium.com/block-science/reviewing-the-fip-0056-and-cdm-debate-on-filecoin-6a6af0ed4b78
     """
     )

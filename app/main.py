@@ -63,6 +63,7 @@ st.sidebar.markdown("""
 - [Security](#security)
 - [Sector Onboarding](#sector-onboarding)
 - [Sector Reward](#sector-reward)
+- [Glossary](#glossary)
     """)
 
 st.sidebar.markdown("## Sector Onboarding Configuration")
@@ -202,18 +203,55 @@ with plot_container:
     st.markdown("### Network Power")
     network_power_chart = NetworkPowerPlotlyChart.build(user_df, num_steps, vlines)
     qa_power_chart = QAPowerPlotlyChart.build(user_df, num_steps, vlines)
+    with st.expander("Click for more context"):
+        st.write(
+        '''
+        Each unit of newly onboarded RBP is multiplied by the QF to calculate the QAP. Network QAP is an important metric determining the size of the Consensus Pledge and the cost to attack Filecoin consensus. 
+        ''')
 
     st.markdown("### Token Distribution & Supply")
     circulating_supply_chart = CirculatingSupplyPlotlyChart.build(df, num_steps, vlines)
+    with st.expander("Click for more context"):
+        st.write(
+        '''
+        Available FIL = FIL that have been minted + FIL that have been vested - FIL that have been burnt
+ 
+        Locked FIL = Locked Block Rewards + Miner Collaterals
+
+        Circulating FIL = Available FIL - Locked FIL
+
+        See Glossary for more information. 
+        ''')
     token_dist_chart = TokenDistributionPlotlyChart.build(df, num_steps, vlines)
     locked_token_dist_chart = TokenLockedDistributionPlotlyChart.build(df, num_steps, vlines)
 
     st.markdown("### Security")
     critical_cost_chart = CriticalCostPlotlyChart.build(df, num_steps, vlines)
+    with st.expander("Click for more context"):
+        st.write(
+        '''
+        The Critical Cost metric allows users to test how much FIL an attacker would have to acquire to have the means of onboarding enough storage for a share of 33% of Network QAP. The higher the Critical Cost, the more FIL are required to attack Filecoin consensus.
+
+        CriticalCost = OnboardingPledge per QAP * Network QAP * 1/3 
+        ''')
     circulating_surplus_chart = CirculatingSurplusPlotlyChart.build(df, num_steps, vlines)
+    with st.expander("Click for more context"):
+        st.write(
+        '''
+        The Circulating Surplus metric divides the Circulating FIL by the Critical Cost and gives users more intuition about the FIL available to attackers and the amount they need. A Critical Surplus of 10 shows that there are 10 FIL in circulation for every 1 FIL that an attacker needs to acquire. A lower Circulating Surplus means that an attacker would need to acquire a larger share of the circulating FIL for their attack.
+
+        A higher Circulating Surplus means that more FIL are available in circulation for each FIL an attacker needs to acquire. 
+
+        Circulating Surplus = Circulating FIL / Critical Cost 
+        ''')
 
     st.markdown("### Sector Onboarding")
     onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(df, num_steps, vlines)
+    with st.expander("Click for more context"):
+        st.write(
+        '''
+        The distribution of the costs per PiB (first for QAP, then RBP) for the individual parts of the Initial Pledge show the effects of the Consensus Pledge on Filecoin security. While an increase in Consensus Pledge makes attacks more costly, it naturally also increases capital costs for honest Storage Providers and their daily operations. 
+        ''')
     rb_onboarding_collateral_chart = RBOnboardingCollateralPlotlyChart.build(df, num_steps, vlines)
     
     st.markdown("### Sector Reward")

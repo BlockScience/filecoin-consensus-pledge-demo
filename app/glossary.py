@@ -7,15 +7,12 @@ def glossary():
 ## Network Power
 
 ### Raw Bytes Network Power (RB PiB)
-
 Total network storage capacity. This is the sum total of the active onboarded storage by all miners and sectors.
 
 ### Quality Adjusted Network Power (QAP PiB)
-
 Total network storage capacity adjusted for Quality. In Filecoin Plus, useful storage is incentivized through additional quality multipliers. Storage Deals through notarized Clients, called Verified Deals (VD), receive a 10x multiplier for QAP and earn Storage Providers higher Block Rewards. QAP is used to calculate the probability of being assigned as a block producer and is as such a key metric for consensus power. 
 
 ### Quality Factor (QF)
-
 The average multiplier for a given amount of PiB. This simulation lets users adjust the average QF for newly onboarded sectors, allowing for experimentation with different demand assumptions and the effects of potentially accepted Filecoin Improvement Proposals (FIPs) introducing additional multipliers (such as a Sector Duration Multiplier for long-term storage, see FIP-0056 (SDM) or [1]).
 
 ## Initial Pledge / Miner Collaterals
@@ -78,21 +75,20 @@ CC = OnboardingPledge per QAP * Network QAP * 1/3
 The Circulating Surplus metric divides the Circulating FIL by the Critical Cost and gives users more intuition about the FIL available to attackers and the amount they need. A Critical Surplus of 10 shows that there are 10 FIL in circulation for every 1 FIL that an attacker needs to acquire. A lower Circulating Surplus means that an attacker would need to acquire a larger share of the circulating FIL for their attack. 
 
 ## Block Reward
-
 In a given period, the Block Reward is the sum total amount of Filecoin minted through Simple Minting and Baseline Minting mechanisms.
 
 ### Simple Minting
-
 A mechanism for issuing Filecoin as storage mining rewards through a function that decays exponentially with time.
 
 ### Baseline Minting
-
-Similiar to Simple Minting, but uses the concept of an "Effective Network Time," rather than the "time since launch," for issuing rewards. This allows Baseline Minting to dynamically adjust minting depending on the network storage meeting a baseline target. See [1] for more information.
+Similiar to Simple Minting, but uses the concept of an "Effective Network Time," rather than the "time since launch," for issuing rewards. This allows Baseline Minting to dynamically adjust minting depending on the network storage meeting a baseline target. See [2] and [3] for more information.
 
 # References
 
 [1]: Reviewing the FIP-0056 and CDM Debate on Filecoin (BlockScience, Danilo Lessa Bernardineli). https://medium.com/block-science/reviewing-the-fip-0056-and-cdm-debate-on-filecoin-6a6af0ed4b78
 
 [2]: Baseline Minting Incentives (Danilo Lessa Bernardineli, Gabriel Lefundes, Burrrata, Jeff Emmett, Jessica Zartler and ZX Zhang). https://medium.com/block-science/baseline-minting-incentives-743b229b9b80    
+
+[3]: A cadCAD Interactive Calculator to Explore Minting Scenarios in Filecoin (Danilo Lessa Bernardineli, Will Wolf, Jeff Emmett, Alex Terrazas, Jamsheed Shorish, Jessica Zartler and ZX Zhang). https://medium.com/block-science/a-cadcad-interactive-calculator-to-explore-minting-scenarios-in-filecoin-284009a2e941
     """
     )
